@@ -4,9 +4,11 @@ package database
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-	dgo "github.com/dgraph-io/dgo"
-	"github.com/dgraph-io/dgo/protos/api"
+	dgo "github.com/dgraph-io/dgo/v200"
+	"github.com/dgraph-io/dgo/v200/protos/api"
+	"github.com/roadev/goapi/models"
 	"google.golang.org/grpc"
 	"log"
 )
@@ -16,8 +18,6 @@ func NewDatabaseConnection() {
 	if err != nil {
 		log.Fatal("While trying to dial gRPC", err)
 	}
-
-	fmt.Println("Hiiiii!!!!")
 
 	defer conn.Close()
 	dgraphClient := dgo.NewDgraphClient(api.NewDgraphClient(conn))
@@ -53,16 +53,41 @@ func NewDatabaseConnection() {
 		}
 	`
 
+	buyer := models.Buyer{
+		Uid:  "_:juan",
+		Name: "Juan",
+		Age:  28,
+	}
+
 	ctx := context.Background()
 	if err := dgraphClient.Alter(ctx, operation); err != nil {
 		log.Fatal("Alter error: ", err)
 	}
 
-	// mutation = &api.Mutation{
-	// 	CommitNow: true,
-	// }
+	pb, err := json.Marshal(buyer)
 
-	// pb, err := json.Marshal(p)
+	mutation := &api.Mutation{
+		CommitNow: true,
+		SetJson:   pb,
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// req := &api.Request{CommitNow: true, Mutations: []*api.Mutation{mutation}}
+
+	response, err := dgraphClient.NewTxn().Mutate(ctx, mutation)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(response)
 
 }
 
