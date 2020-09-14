@@ -40,7 +40,7 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+	// "net/http"
 
 	"github.com/roadev/goapi/server"
 )
@@ -48,7 +48,7 @@ import (
 // var routes = flag.Bool("routes", false, "Generate router documentation")
 
 func main() {
-	s, err := server.NewServer()
+	s, _, err := server.NewServer()
 
 	if err != nil {
 		fmt.Println("Error - init server: ", err)
@@ -57,14 +57,6 @@ func main() {
 	r := s.Router()
 
 	server.Listen(r)
-
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hi1!!"))
-	})
-
-	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("pong"))
-	})
 
 	// flag.Parse()
 
