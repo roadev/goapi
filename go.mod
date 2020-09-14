@@ -1,4 +1,4 @@
-module github.com/roadev/go_api
+module github.com/roadev/goapi
 
 go 1.13
 
