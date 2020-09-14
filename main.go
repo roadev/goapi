@@ -39,14 +39,19 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 )
 
 // var routes = flag.Bool("routes", false, "Generate router documentation")
 
 func main() {
-	server := NewServer(":3000")
-	server.router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
+	s, err := NewServer()
+	if err != nil {
+		fmt.Println("Error ", err)
+	}
+
+	s.router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("pong"))
 	})
 

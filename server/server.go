@@ -1,13 +1,13 @@
-package apiserver
+package server
 
 import (
+	"net"
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	config "github.com/spf13/viper"
 )
 
@@ -16,7 +16,7 @@ type Server struct {
 	server *http.Server
 }
 
-func NewServer() (*Server error) {
+func NewServer() (*Server, error) {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -43,23 +43,27 @@ func NewServer() (*Server error) {
 		MaxAge:           config.GetInt("server.cors.max_age"),
 	}).Handler)
 
-	s := &Server {
-		router: r
+	s := &Server{
+		router: r,
 	}
 
 	return s, nil
 }
 
 func (s *Server) Listen() error {
-	
-	http.Handle("/", s.router)
 
-	err := http.ListenAndServe(s.port, nil)
-	if err != nil {
-		return err
-	} else {
-		return nil 
+	s.server = &http.Server{
+		Addr:    net.JoinHostPort(config.GetString("server.host"), config.GetString("server.port")),
+		Handler: s.router,
 	}
+
+	// Listen
+	// listener, err := net.Listen("tcp", s.server.Addr)
+	// if err != nil {
+	// 	return fmt.Errorf("Could not listen on %s: %v", s.server.Addr, err)
+	// }
+
+	return nil
 }
 
 func (s *Server) Router() chi.Router {
