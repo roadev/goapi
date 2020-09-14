@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
+	"github.com/roadev/goapi/database"
 	config "github.com/spf13/viper"
 )
 
@@ -37,6 +38,8 @@ func NewServer() (*Server, error) {
 	s := &Server{
 		router: r,
 	}
+
+	database.NewDatabaseConnection()
 
 	return s, nil
 }
