@@ -1,7 +1,6 @@
 package server
 
 import (
-	"net"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -16,6 +15,8 @@ type Server struct {
 	server *http.Server
 }
 
+type Router struct{}
+
 func NewServer() (*Server, error) {
 	r := chi.NewRouter()
 
@@ -24,16 +25,6 @@ func NewServer() (*Server, error) {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.URLFormat)
 	r.Use(render.SetContentType(render.ContentTypeJSON))
-
-	// Log Requests
-	// if config.GetBool("server.log_requests") {
-	// 	switch config.GetString("logger.encoding") {
-	// 	case "stackdriver":
-	// 		r.Use(loggerHTTPMiddlewareStackdriver(config.GetBool("server.log_requests_body"), config.GetStringSlice("server.log_disabled_http")))
-	// 	default:
-	// 		r.Use(loggerHTTPMiddlewareDefault(config.GetBool("server.log_requests_body"), config.GetStringSlice("server.log_disabled_http")))
-	// 	}
-	// }
 
 	r.Use(cors.New(cors.Options{
 		AllowedOrigins:   config.GetStringSlice("server.cors.allowed_origins"),
@@ -50,22 +41,20 @@ func NewServer() (*Server, error) {
 	return s, nil
 }
 
-func (s *Server) Listen() error {
+func (s *Server) Router() chi.Router {
+	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("hi1!!"))
+	})
 
-	s.server = &http.Server{
-		Addr:    net.JoinHostPort(config.GetString("server.host"), config.GetString("server.port")),
-		Handler: s.router,
-	}
+	s.router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong"))
+	})
 
-	// Listen
-	// listener, err := net.Listen("tcp", s.server.Addr)
-	// if err != nil {
-	// 	return fmt.Errorf("Could not listen on %s: %v", s.server.Addr, err)
-	// }
-
-	return nil
+	return s.router
 }
 
-func (s *Server) Router() chi.Router {
-	return s.router
+func Listen(r chi.Router) {
+
+	http.ListenAndServe(":3000", r)
+
 }
