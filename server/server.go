@@ -53,29 +53,11 @@ func NewServer() (*Server, error) {
 
 func (s *Server) Router() chi.Router {
 	s.router.Get("/buyers", func(w http.ResponseWriter, r *http.Request) {
-
-		// query := `{
-		// 	buyers(func: has(name)) {
-		// 		uid
-		// 		id
-		// 		name
-		// 		age
-		// 	}
-		// }`
-		// // // variables := map[string]string {"$id1": response.Uids[]
-
-		// ctx := context.Background()
-
-		// response, err := s.dgraphClient.NewTxn().Query(ctx, query)
-
-		// if err != nil {
-		// 	log.Fatal(err)
-		// 	// fmt.Println(err)
-		// }
-
-		// fmt.Println(response)
-
 		controllers.GetAllBuyers(s.dgraphClient, s.ctx, w)
+	})
+
+	s.router.Get("/load_buyers", func(w http.ResponseWriter, r *http.Request) {
+		controllers.LoadBuyers(1600053936468)
 	})
 
 	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {

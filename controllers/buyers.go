@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/dgraph-io/dgo/v200"
-	// "log"
+	"io/ioutil"
+	"log"
 	"net/http"
 	// "github.com/roadev/goapi/server"
 )
@@ -34,5 +35,27 @@ func GetAllBuyers(dgraphClient *dgo.Dgraph, ctx context.Context, w http.Response
 	// fmt.Println(response)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(response.Json))
+
+}
+
+func LoadBuyers(date int) {
+	response, err := http.Get(fmt.Sprintf("https://kqxty15mpg.execute-api.us-east-1.amazonaws.com/buyers?%d", date))
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer response.Body.Close()
+
+	responseData, err := ioutil.ReadAll(response.Body)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	responseString := string(responseData)
+	fmt.Println(responseString)
+
+	// fmt.Println("Response: ", response.Body)
 
 }
