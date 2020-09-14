@@ -48,7 +48,7 @@ import (
 // var routes = flag.Bool("routes", false, "Generate router documentation")
 
 func main() {
-	s, _, err := server.NewServer()
+	s, err := server.NewServer()
 
 	if err != nil {
 		fmt.Println("Error - init server: ", err)

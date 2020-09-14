@@ -2,12 +2,13 @@ package server
 
 import (
 	"context"
+	// "fmt"
 	"github.com/dgraph-io/dgo/v200"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
-	// "github.com/roadev/goapi/controllers"
+	"github.com/roadev/goapi/controllers"
 	"github.com/roadev/goapi/database"
 	config "github.com/spf13/viper"
 	"net/http"
@@ -22,7 +23,7 @@ type Server struct {
 
 type Router struct{}
 
-func NewServer() (*Server, *dgo.Dgraph, error) {
+func NewServer() (*Server, error) {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -47,12 +48,34 @@ func NewServer() (*Server, *dgo.Dgraph, error) {
 		ctx:          ctx,
 	}
 
-	return s, dgraphClient, nil
+	return s, nil
 }
 
 func (s *Server) Router() chi.Router {
 	s.router.Get("/buyers", func(w http.ResponseWriter, r *http.Request) {
-		// controllers.GetAllBuyers(s.dgraphClient, s.ctx, w)
+
+		// query := `{
+		// 	buyers(func: has(name)) {
+		// 		uid
+		// 		id
+		// 		name
+		// 		age
+		// 	}
+		// }`
+		// // // variables := map[string]string {"$id1": response.Uids[]
+
+		// ctx := context.Background()
+
+		// response, err := s.dgraphClient.NewTxn().Query(ctx, query)
+
+		// if err != nil {
+		// 	log.Fatal(err)
+		// 	// fmt.Println(err)
+		// }
+
+		// fmt.Println(response)
+
+		controllers.GetAllBuyers(s.dgraphClient, s.ctx, w)
 	})
 
 	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {

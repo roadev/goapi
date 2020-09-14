@@ -4,14 +4,13 @@ package database
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
+	// "encoding/json"
+	// "fmt"
 	dgo "github.com/dgraph-io/dgo/v200"
 	"github.com/dgraph-io/dgo/v200/protos/api"
-	"github.com/roadev/goapi/models"
+	// "github.com/roadev/goapi/models"
 	"google.golang.org/grpc"
 	"log"
-	// "strings"
 )
 
 func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
@@ -20,7 +19,7 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 		log.Fatal("While trying to dial gRPC", err)
 	}
 
-	defer conn.Close()
+	// defer conn.Close()
 	dgraphClient := dgo.NewDgraphClient(api.NewDgraphClient(conn))
 
 	operation := &api.Operation{}
@@ -69,18 +68,12 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 	// 	Age:  28,
 	// }
 
-	query := `{
-		buyers(func: has(name)) {
-			uid
-			id
-			name
-			age
-		}
-	}`
-
 	// query := `{
 	// 	buyers(func: has(name)) {
+	// 		uid
+	// 		id
 	// 		name
+	// 		age
 	// 	}
 	// }`
 
@@ -97,45 +90,6 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 	// 	SetJson:   pb,
 	// }
 
-	response, err := dgraphClient.NewTxn().Query(ctx, query)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(query)
-	// fmt.Println(response.Json)
-
-	var buyer models.BuyerResponse
-
-	// err = json.Unmarshal(response.Json, &buyer)
-	// // decoder := json.NewDecoder(strings.NewReader(response.Json))
-	// // err := decoder.Decode(&buyer)
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	if err := json.Unmarshal(response.GetJson(), &buyer); err != nil {
-		panic(err)
-	}
-
-	// fmt.Println(buyer)
-
-	out, _ := json.MarshalIndent(buyer, "", "    ")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// fmt.Println(out)
-
-	fmt.Printf("%s\n", out)
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	// req := &api.Request{CommitNow: true, Mutations: []*api.Mutation{mutation}}
 
 	// response, err := dgraphClient.NewTxn().Mutate(ctx, mutation)
@@ -144,7 +98,27 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 	// 	log.Fatal(err)
 	// }
 
-	// fmt.Println(string(response.Json))
+	// response, err := dgraphClient.NewTxn().Query(ctx, query)
+
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// fmt.Println(query)
+
+	// var buyer models.BuyerResponse
+
+	// if err := json.Unmarshal(response.GetJson(), &buyer); err != nil {
+	// 	panic(err)
+	// }
+
+	// out, _ := json.MarshalIndent(buyer, "", "    ")
+
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	// fmt.Printf("%s\n", out)
 
 	return dgraphClient, ctx
 

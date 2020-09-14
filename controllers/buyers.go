@@ -14,22 +14,25 @@ type BuyerController struct {
 
 func GetAllBuyers(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWriter) {
 	query := `{
-		all(func: has(name)) {
+		buyers(func: has(name)) {
 			uid
+			id
 			name
 			age
 		}
 	}`
 	// // variables := map[string]string {"$id1": response.Uids[]
 
-	response, _ := dgraphClient.NewTxn().Query(context.Background(), query)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	response, err := dgraphClient.NewTxn().Query(ctx, query)
 
-	fmt.Println(query)
+	if err != nil {
+		// log.Fatal(err)
+		fmt.Println(err)
+	}
+
 	fmt.Println(response)
-
-	w.Write([]byte("pong"))
+	// fmt.Println(response)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(response.Json))
 
 }
