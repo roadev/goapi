@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	// "fmt"
+	"fmt"
 	"github.com/dgraph-io/dgo/v200"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -57,7 +57,19 @@ func (s *Server) Router() chi.Router {
 	})
 
 	s.router.Get("/load_buyers", func(w http.ResponseWriter, r *http.Request) {
-		controllers.LoadBuyers(s.dgraphClient, s.ctx, w, 1600053936468)
+		param := r.URL.Query().Get("datetime")
+		fmt.Println("param", param)
+		controllers.LoadBuyers(s.dgraphClient, s.ctx, w, param)
+	})
+
+	s.router.Get("/products", func(w http.ResponseWriter, r *http.Request) {
+		controllers.GetAllProducts(s.dgraphClient, s.ctx, w)
+	})
+
+	s.router.Get("/load_products", func(w http.ResponseWriter, r *http.Request) {
+		param := r.URL.Query().Get("datetime")
+		fmt.Println("param", param)
+		controllers.LoadProducts(s.dgraphClient, s.ctx, w, param)
 	})
 
 	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {

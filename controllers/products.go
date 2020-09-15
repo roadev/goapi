@@ -6,22 +6,24 @@ import (
 	"fmt"
 	"github.com/dgraph-io/dgo/v200"
 	"github.com/dgraph-io/dgo/v200/protos/api"
-	"github.com/roadev/goapi/models"
+	// "github.com/roadev/goapi/models"
+	"github.com/roadev/goapi/utils"
 	"io/ioutil"
 	"log"
 	"net/http"
+	// "strings"
 )
 
-type BuyerController struct {
+type ProductController struct {
 }
 
-func GetAllBuyers(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWriter) {
+func GetAllProducts(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWriter) {
 	query := `{
-		buyers(func: has(name)) {
+		products(func: has(price)) {
 			uid
 			id
 			name
-			age
+			price
 		}
 	}`
 
@@ -39,8 +41,8 @@ func GetAllBuyers(dgraphClient *dgo.Dgraph, ctx context.Context, w http.Response
 
 }
 
-func LoadBuyers(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWriter, date string) {
-	response, err := http.Get("https://kqxty15mpg.execute-api.us-east-1.amazonaws.com/buyers?date=" + date)
+func LoadProducts(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWriter, date string) {
+	response, err := http.Get("https://kqxty15mpg.execute-api.us-east-1.amazonaws.com/products?date=" + date)
 
 	if err != nil {
 		panic(err)
@@ -54,15 +56,21 @@ func LoadBuyers(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWr
 		log.Fatal(err)
 	}
 
-	var buyers []models.Buyer
+	parsedProductsList := utils.TransformProductsData(string(responseData))
 
-	if err := json.Unmarshal(responseData, &buyers); err != nil {
-		panic(err)
-	}
+	out, _ := json.Marshal(parsedProductsList)
+
+	fmt.Println(out)
+
+	// var products []models.Product
+
+	// if err := json.Unmarshal(responseData, &products); err != nil {
+	// 	panic(err)
+	// }
 
 	mutation := &api.Mutation{
 		CommitNow: true,
-		SetJson:   responseData,
+		SetJson:   out,
 	}
 
 	res, err := dgraphClient.NewTxn().Mutate(ctx, mutation)
@@ -75,7 +83,7 @@ func LoadBuyers(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWr
 
 	rawJson := fmt.Sprintf(`
 		{
-			"message": "Buyers have been imported for the given datetime",
+			"message": "Products have been imported for the given datetime",
 			"query_date": "%s"
 		}`,
 		date,
