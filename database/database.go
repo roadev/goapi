@@ -26,7 +26,7 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 
 	operation.Schema = `		
 		name: string @index(exact) .
-		id: int @index(int) .
+		id: string @index(exact) .
 		age: int .
 		price: float .
 		Buyer: [uid] .
@@ -37,7 +37,7 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 		query_date: dateTime .
 
 		type Buyer {
-			id: int
+			id: string
 			name: string
 			age: int
 			query_date: dateTime
@@ -45,7 +45,7 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 		}
 
 		type Transaction {
-			id: int
+			id: string
 			Buyer: [Buyer]
 			ip: string
 			device: string
@@ -54,7 +54,7 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 		}
 
 		type Product {
-			id: int
+			id: string
 			name: string
 			query_date: dateTime
 			price: float
@@ -79,9 +79,9 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 
 	ctx := context.Background()
 
-	// if err := dgraphClient.Alter(ctx, operation); err != nil {
-	// 	log.Fatal("Alter error: ", err)
-	// }
+	if err := dgraphClient.Alter(ctx, operation); err != nil {
+		log.Fatal("Alter error: ", err)
+	}
 
 	// pb, err := json.Marshal(buyer)
 

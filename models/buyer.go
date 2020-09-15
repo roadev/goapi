@@ -2,7 +2,7 @@ package models
 
 type Buyer struct {
 	Uid       string   `json:"uid,omitempty"`
-	Id        int      `json:"id,omitempty"`
+	Id        string   `json:"id,omitempty"`
 	Name      string   `json:"name,omitempty"`
 	Age       int      `json:"age,omitempty"`
 	QueryDate string   `json:"query_date,omitempty"`
@@ -12,3 +12,7 @@ type Buyer struct {
 type BuyerResponse struct {
 	Buyers []Buyer `json:"buyers"`
 }
+
+// type BuyerResponse struct {
+// 	Buyers []Buyer `json:"buyers"`
+// }

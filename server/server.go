@@ -57,7 +57,7 @@ func (s *Server) Router() chi.Router {
 	})
 
 	s.router.Get("/load_buyers", func(w http.ResponseWriter, r *http.Request) {
-		controllers.LoadBuyers(1600053936468)
+		controllers.LoadBuyers(s.dgraphClient, s.ctx, w, 1600053936468)
 	})
 
 	s.router.Get("/", func(w http.ResponseWriter, r *http.Request) {
