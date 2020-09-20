@@ -14,35 +14,68 @@ import (
 	// "strings"
 )
 
-type ProductController struct {
+type TransactionController struct {
 }
 
-func GetAllProducts(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWriter) {
-	query := `{
-		products(func: has(price)) {
-			uid
-			id
-			name
-			price
-		}
-	}`
+func GetAllTransactionsByBuyer(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWriter, buyerId string) {
+	// buyerQuery := fmt.Sprintf(`
+	// 	{
+	// 		buyer(func eq(id@en, %s))
+	// 		@filter(has(age)) {
+	// 			uid
+	// 			id
+	// 			name
+	// 			age
+	// 		}
+	// 	}`,
+	// 	buyerId,
+	// )
 
-	response, err := dgraphClient.NewTxn().Query(ctx, query)
+	// transactionsQuery := `{
+	// 	transactions(func: has(device)) {
+	// 		uid
+	// 		id
+	// 		ip
+	// 		device
+	// 		buyer_id
+	// 		producto_ids
+	// 	}
+	// }`
 
-	if err != nil {
-		// log.Fatal(err)
-		fmt.Println(err)
-	}
+	// transactionsResponse, err := dgraphClient.NewTxn().Query(ctx, transactionsQuery)
 
-	fmt.Println(response)
+	// if err != nil {
+	// 	// log.Fatal(err)
+	// 	fmt.Println(err)
+	// }
+
+	// query := `{
+	// 	products(func: has(price)) {
+	// 		uid
+	// 		id
+	// 		name
+	// 		price
+	// 	}
+	// }`
+
+	// productsResponse, err := dgraphClient.NewTxn().Query(ctx, query)
+
+	// if err != nil {
+	// 	// log.Fatal(err)
+	// 	fmt.Println(err)
+	// }
+
+	// fmt.Println(productsResponse)
+
 	// fmt.Println(response)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(response.Json))
+	// w.Header().Set("Content-Type", "application/json")
+	// w.Write([]byte(response.Json))
 
 }
 
-func LoadProducts(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWriter, date string) {
-	response, err := http.Get("https://kqxty15mpg.execute-api.us-east-1.amazonaws.com/products?date=" + date)
+func LoadTransactions(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWriter, date string) {
+
+	response, err := http.Get("https://kqxty15mpg.execute-api.us-east-1.amazonaws.com/transactions?date=" + date)
 
 	if err != nil {
 		panic(err)
@@ -56,9 +89,9 @@ func LoadProducts(dgraphClient *dgo.Dgraph, ctx context.Context, w http.Response
 		log.Fatal(err)
 	}
 
-	parsedProductsList := utils.TransformProductsData(string(responseData))
+	parsedTransactionList := utils.TransformTransactionsData(string(responseData))
 
-	out, _ := json.Marshal(parsedProductsList)
+	out, _ := json.Marshal(parsedTransactionList)
 
 	fmt.Println(out)
 
