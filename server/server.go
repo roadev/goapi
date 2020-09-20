@@ -78,7 +78,7 @@ func (s *Server) Router() chi.Router {
 
 	s.router.Get("/load_transactions", func(w http.ResponseWriter, r *http.Request) {
 		param := r.URL.Query().Get("datetime")
-		fmt.Println("param", param)
+		// fmt.Println("param", param)
 		controllers.LoadTransactions(s.dgraphClient, s.ctx, w, param)
 	})
 

@@ -93,7 +93,7 @@ func LoadTransactions(dgraphClient *dgo.Dgraph, ctx context.Context, w http.Resp
 
 	out, _ := json.Marshal(parsedTransactionList)
 
-	fmt.Println(out)
+	// fmt.Println(out)
 
 	// var products []models.Product
 
@@ -126,9 +126,10 @@ func LoadTransactions(dgraphClient *dgo.Dgraph, ctx context.Context, w http.Resp
 	} else {
 		rawJson := fmt.Sprintf(`
 		{
-			"message": "Products have been imported for the given datetime",
+			"message": "%d transactions have been imported for the given datetime",
 			"query_date": "%s"
 		}`,
+			len(parsedTransactionList),
 			date,
 		)
 		jsonData := []byte(rawJson)

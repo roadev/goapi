@@ -29,9 +29,8 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 		id: string @index(exact) .
 		age: int .
 		price: int .
-		buyer_id: @index(exact) .
-		Products: [uid] .
-		Transactions: [uid] .
+		buyer_id: string @index(exact) .
+		products: [int] .
 		ip: string .
 		device: string .
 		query_date: dateTime .
@@ -49,7 +48,7 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 			ip: string
 			device: string
 			query_date: dateTime
-			Products: product_ids
+			products: [int]
 		}
 
 		type Product {
