@@ -8,3 +8,7 @@ type Product struct {
 	QueryDate string   `json:"query_date,omitempty"`
 	DType     []string `json:"dgraph.type,omitempty"`
 }
+
+type ProductResponse struct {
+	Products []Product `json:"products"`
+}

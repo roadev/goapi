@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"github.com/dgraph-io/dgo/v200"
 	"github.com/dgraph-io/dgo/v200/protos/api"
-	// "github.com/roadev/goapi/models"
+	unique "github.com/mpvl/unique"
+	"github.com/roadev/goapi/models"
 	"github.com/roadev/goapi/utils"
 	"io/ioutil"
 	"log"
@@ -18,58 +19,115 @@ type TransactionController struct {
 }
 
 func GetAllTransactionsByBuyer(dgraphClient *dgo.Dgraph, ctx context.Context, w http.ResponseWriter, buyerId string) {
-	// buyerQuery := fmt.Sprintf(`
-	// 	{
-	// 		buyer(func eq(id@en, %s))
-	// 		@filter(has(age)) {
-	// 			uid
-	// 			id
-	// 			name
-	// 			age
-	// 		}
-	// 	}`,
-	// 	buyerId,
-	// )
+	// 	buyerQuery := fmt.Sprintf(`
+	// 		{
+	// 			buyer(func eq(id@en, %s))
+	// 			@filter(has(age)) {
+	// 				uid
+	// 				id
+	// 				name
+	// 				age
+	// 			}
+	// 		}`,
+	// 		buyerId,
+	// 	)
 
-	// transactionsQuery := `{
-	// 	transactions(func: has(device)) {
-	// 		uid
-	// 		id
-	// 		ip
-	// 		device
-	// 		buyer_id
-	// 		producto_ids
-	// 	}
-	// }`
+	// 	fmt.Println(buyerQuery)
 
-	// transactionsResponse, err := dgraphClient.NewTxn().Query(ctx, transactionsQuery)
+	var transactions models.TransactionResponse
 
-	// if err != nil {
-	// 	// log.Fatal(err)
-	// 	fmt.Println(err)
-	// }
+	transactionsQuery := fmt.Sprintf(`
+		{
+			transactions(func: eq(buyer_id, %s))
+			@filter(has(device)) {
+				uid
+				id
+				ip
+				device
+				buyer_id
+				product_ids
+			}
+		}`,
+		buyerId,
+	)
 
-	// query := `{
-	// 	products(func: has(price)) {
-	// 		uid
-	// 		id
-	// 		name
-	// 		price
-	// 	}
-	// }`
+	transactionsResponse, err := dgraphClient.NewTxn().Query(ctx, transactionsQuery)
 
-	// productsResponse, err := dgraphClient.NewTxn().Query(ctx, query)
+	if err != nil {
+		// log.Fatal(err)
+		fmt.Println(err)
+	}
 
-	// if err != nil {
-	// 	// log.Fatal(err)
-	// 	fmt.Println(err)
-	// }
+	// fmt.Println(transactionsResponse)
 
-	// fmt.Println(productsResponse)
+	if err := json.Unmarshal(transactionsResponse.Json, &transactions); err != nil {
+		panic(err)
+	}
 
-	// fmt.Println(response)
-	// w.Header().Set("Content-Type", "application/json")
-	// w.Write([]byte(response.Json))
+	// fmt.Println(transactions.Transactions[0])
+
+	// var transactionsWithProducts []models.Transaction
+	var productIds []string
+
+	for _, transaction := range transactions.Transactions {
+		productIds = append(productIds, transaction.ProductIds...)
+	}
+
+	unique.Strings(&productIds)
+
+	// fmt.Println(productIds)
+
+	productsQuery := fmt.Sprintf(
+		`{
+			products(func: eq(id, %s)) {
+				uid
+				id
+				name
+				price
+			}
+		}`,
+		productIds,
+	)
+
+	var products models.ProductResponse
+
+	// fmt.Println(len(productIds))
+
+	productsResponse, err := dgraphClient.NewTxn().Query(ctx, productsQuery)
+
+	if err != nil {
+		// log.Fatal(err)
+		fmt.Println(err)
+	}
+
+	if err := json.Unmarshal(productsResponse.Json, &products); err != nil {
+		panic(err)
+	}
+
+	// fmt.Println(products)
+
+	for i := 0; i < len(transactions.Transactions); i++ {
+		// var parsedProducts []models.Product
+
+		for j := 0; j < len(transactions.Transactions[i].ProductIds); j++ {
+
+			for k := 0; k < len(products.Products); k++ {
+				if products.Products[k].Id == transactions.Transactions[i].ProductIds[j] {
+					transactions.Transactions[i].Products = append(transactions.Transactions[i].Products, products.Products[k])
+				}
+			}
+		}
+
+	}
+
+	fmt.Println(transactions.Transactions[0].Products)
+
+	out, _ := json.Marshal(transactions)
+	fmt.Println(string(out))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(out))
 
 }
 

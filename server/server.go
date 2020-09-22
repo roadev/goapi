@@ -72,9 +72,10 @@ func (s *Server) Router() chi.Router {
 		controllers.LoadProducts(s.dgraphClient, s.ctx, w, param)
 	})
 
-	// s.router.Get("/transactions", func(w http.ResponseWriter, r *http.Request) {
-	// 	controllers.GetAllTransactionsByBuyer(s.dgraphClient, s.ctx, w)
-	// })
+	s.router.Get("/transactions", func(w http.ResponseWriter, r *http.Request) {
+		param := r.URL.Query().Get("buyer_id")
+		controllers.GetAllTransactionsByBuyer(s.dgraphClient, s.ctx, w, param)
+	})
 
 	s.router.Get("/load_transactions", func(w http.ResponseWriter, r *http.Request) {
 		param := r.URL.Query().Get("datetime")
