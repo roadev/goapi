@@ -58,10 +58,17 @@ func GetAllTransactionsByBuyer(dgraphClient *dgo.Dgraph, ctx context.Context, w 
 		fmt.Println(err)
 	}
 
-	// fmt.Println(transactionsResponse)
+	fmt.Println(transactionsResponse)
 
 	if err := json.Unmarshal(transactionsResponse.Json, &transactions); err != nil {
 		panic(err)
+	}
+
+	if len(transactions.Transactions) == 0 {
+		out, _ := json.Marshal(transactions)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(out))
 	}
 
 	// fmt.Println(transactions.Transactions[0])
@@ -120,10 +127,10 @@ func GetAllTransactionsByBuyer(dgraphClient *dgo.Dgraph, ctx context.Context, w 
 
 	}
 
-	fmt.Println(transactions.Transactions[0].Products)
+	// fmt.Println(transactions.Transactions[0].Products)
 
 	out, _ := json.Marshal(transactions)
-	fmt.Println(string(out))
+	// fmt.Println(string(out))
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

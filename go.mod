@@ -17,5 +17,7 @@ require (
 	github.com/tsenart/deadcode v0.0.0-20160724212837-210d2dc333e9 // indirect
 	github.com/walle/lll v1.0.1 // indirect
 	go.uber.org/zap v1.16.0
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859
+	golang.org/x/text v0.3.2
 	google.golang.org/grpc v1.23.0
 )
