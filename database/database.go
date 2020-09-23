@@ -59,64 +59,11 @@ func NewDatabaseConnection() (*dgo.Dgraph, context.Context) {
 		}
 	`
 
-	// buyer := models.Buyer{
-	// 	Id:   2,
-	// 	Uid:  "_:juan",
-	// 	Name: "Juan",
-	// 	Age:  28,
-	// }
-
-	// query := `{
-	// 	buyers(func: has(name)) {
-	// 		uid
-	// 		id
-	// 		name
-	// 		age
-	// 	}
-	// }`
-
 	ctx := context.Background()
 
 	if err := dgraphClient.Alter(ctx, operation); err != nil {
 		log.Fatal("Alter error: ", err)
 	}
-
-	// pb, err := json.Marshal(buyer)
-
-	// mutation := &api.Mutation{
-	// 	CommitNow: true,
-	// 	SetJson:   pb,
-	// }
-
-	// req := &api.Request{CommitNow: true, Mutations: []*api.Mutation{mutation}}
-
-	// response, err := dgraphClient.NewTxn().Mutate(ctx, mutation)
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// response, err := dgraphClient.NewTxn().Query(ctx, query)
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// fmt.Println(query)
-
-	// var buyer models.BuyerResponse
-
-	// if err := json.Unmarshal(response.GetJson(), &buyer); err != nil {
-	// 	panic(err)
-	// }
-
-	// out, _ := json.MarshalIndent(buyer, "", "    ")
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// fmt.Printf("%s\n", out)
 
 	return dgraphClient, ctx
 
